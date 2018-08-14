@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Filter from '../components/Filter';
 import SongList from '../components/SongList';
 import KaraokeDisplay from '../components/KaraokeDisplay';
+import VoteBar from '../components/VoteBar';
 import songs from '../data/songs';
 
 class KaraokeContainer extends Component {
@@ -12,12 +13,20 @@ class KaraokeContainer extends Component {
     lyrics: ''
   }
 
-  provideLyrics = (song, lyrics, event) => {
+  provideLyrics = (song, lyrics, id, event) => {
     event.preventDefault();
     this.setState({
       currentSong: song,
       lyrics: lyrics
     })
+    let url = `http://192.168.3.119:3000/users/13/songs/${id}/play`
+    let  config = {
+        headers: {
+          'Content-Type': 'application/json'
+          },
+          method: 'PATCH'
+        }
+    fetch(url, config).then(this.componentDidMount)
   }
 
   filterSongs = (searchTerm) => {
@@ -28,7 +37,7 @@ class KaraokeContainer extends Component {
     } else {
       return false
     }})
-    
+
     this.setState({
       searchSongs: filteredArray
     })
@@ -47,13 +56,17 @@ class KaraokeContainer extends Component {
     );
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     fetch("http://192.168.3.119:3000/users/13/songs")
     .then(data => data.json())
     .then(songs => this.setState({
       songs: songs,
       searchSongs: songs
     }))
+  }
+
+  componentDidUpdate() {
+
   }
 }
 
